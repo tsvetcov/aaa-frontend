@@ -29,8 +29,8 @@ def get_index(request: Request) -> Response:
 
 @app.post("/", response_class=HTMLResponse)
 def infer_model(
-    file: UploadFile = File(...),
     request: Request,
+    file: UploadFile = File(...), 
     model: Reader = Depends(get_model, use_cache=True),
     thr: Union[int, None] = Form(0)
 ) -> Response:
