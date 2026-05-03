@@ -34,14 +34,15 @@ def infer_model(
     model: Reader = Depends(get_model, use_cache=True),
     thr: Union[int, None] = Form(0)
 ) -> Response:
-    ctx: dict = {}
+    curr_thr = thr if thr is not None else 0
+    ctx: dict = {"thr": curr_thr} 
     try:
         picture = file.file.read() 
         image = open_image(picture)   
         draw = PolygonDrawer.from_image(image)
         words = []
         for coords, word, accuracy in model.readtext(np.array(image)):
-            if accuracy >= thr / 100:
+            if accuracy >= curr_thr / 100:
                 draw.highlight_word(coords, word)
                 cropped_word_image = draw.crop(coords)
                 words.append(
