@@ -17,13 +17,13 @@
         </a>
       </div>
     </nav>
-    {not image and not words and not error}
+    {% if not image and not words and not error %}
     <h1 style="text-align: center;">Это форма для загрузки файла</h1>
-    {endif}
-    {if error}  
-    <p class="mistake">Произошла ошибка  {{error.split()}}.</p>
+    {% endif %}
+    {% if error %}  
+    <p class="mistake">{{error}}.</p>
     <img src="https://ru.hostings.info/upload/images/2021/12/e11044b915dc39afc3004430606bd6d1.jpg" alt="Image for 404 error" width="300" height="200">
-    {endif}
+    {% endif %}
 
     <div style="text-align: center;">
     <form method="POST" enctype="multipart/form-data">
@@ -33,10 +33,10 @@
     </button>
     </form>
     </div>
-    {if image}
-    <img src=image alt="Image for 404 error" width="300" height="200">
-    {endif}
-    {if words}
+    {% if image %}
+    <img src={{image}} alt="Image" width="300" height="200">
+    {% endif %}
+    {% if words %}
 <table>
   
   <tr>
@@ -44,13 +44,15 @@
     <th>Эпоха</th>
     <th>F-score</th>
   </tr>
-  {for elem in words}
+  {% for elem in words %}
   <tr>
     <td>baseline</td>
-    <td><img src=elem.image alt="Image" width="300" height="200"></td>
-    <td>elem.words</td>
+    <td><img src={{elem.image}} alt="Image" width="300" height="200"></td>
+    <td>{{elem.words}}</td>
   </tr>
+  {% endfor %}
 </table>
+ {% endif %}
 
     <footer class="container mt-5">
       <p class="text-center text-muted">© 2025 Академия Аналитиков Авито</p>
