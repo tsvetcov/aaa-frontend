@@ -21,7 +21,7 @@
     <h1 style="text-align: center;">Это форма для загрузки файла</h1>
     {% endif %}
     {% if error %}  
-    <p class="mistake">{{error}}.</p>
+    <p class="mistake">{{error}}</p>
     <img src="https://ru.hostings.info/upload/images/2021/12/e11044b915dc39afc3004430606bd6d1.jpg" alt="Image for 404 error" width="300" height="200">
     {% endif %}
 
@@ -34,21 +34,21 @@
     </form>
     </div>
     {% if image %}
-    <img src={{image}} alt="Image" width="300" height="200">
+    <img src="{{image}}" alt="Image" width="300" height="200">
     {% endif %}
     {% if words %}
 <table>
   
   <tr>
-    <th>Название модели</th>
-    <th>Эпоха</th>
-    <th>F-score</th>
+    <th>Фрагмент изображения</th>
+    <th>Текст на фрагменте</th>
+    <th>Accuracy</th>
   </tr>
   {% for elem in words %}
   <tr>
-    <td>baseline</td>
-    <td><img src={{elem.image}} alt="Image" width="300" height="200"></td>
-    <td>{{elem.word}}</td>
+    <td><img src="{{elem.image}}" alt="Image" width="300" height="200"></td>
+    <td>"{{elem.word}}"</td>
+    <td>"{{elem.accuracy}}"</td>
   </tr>
   {% endfor %}
 </table>
