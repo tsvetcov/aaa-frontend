@@ -50,5 +50,5 @@ def infer_model(
             words=words,
         )
     except Exception as err:
-        ctx.update(error=str(err))
+        ctx.update(error=str(err), error_type=type(err).__name__ )
     return templates.TemplateResponse(request, "index.html", ctx)
