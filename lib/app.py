@@ -16,6 +16,7 @@ from lib.models import Reader
 from lib.models import get_model
 from typing import Union
 import numpy as np
+import io
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"))
@@ -38,7 +39,7 @@ def infer_model(
     ctx: dict = {"thr": curr_thr} 
     try:
         picture = file.file.read() 
-        image = open_image(picture)   
+        image = open_image(io.BytesIO(picture))  
         draw = PolygonDrawer.from_image(image)
         words = []
         for coords, word, accuracy in model.readtext(np.array(image)):
