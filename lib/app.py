@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi import Request
 from fastapi import Response
 from fastapi import UploadFile
+from fastapi import File
+from fastapi import Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -12,6 +14,8 @@ from lib.images import image_to_img_src
 from lib.images import open_image
 from lib.models import Reader
 from lib.models import get_model
+from typing import Union
+import numpy as np
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"))
@@ -25,24 +29,27 @@ def get_index(request: Request) -> Response:
 
 @app.post("/", response_class=HTMLResponse)
 def infer_model(
-    file: UploadFile,
+    file: UploadFile = File(...),
     request: Request,
     model: Reader = Depends(get_model, use_cache=True),
+    thr: Union[int, None] = Form(0)
 ) -> Response:
     ctx: dict = {}
     try:
-        image = open_image(file.file)
+        picture = file.file.read() 
+        image = open_image(picture)   
         draw = PolygonDrawer.from_image(image)
         words = []
-        for coords, word, accuracy in model.readtext(image):
-            draw.highlight_word(coords, word)
-            cropped_word_image = draw.crop(coords)
-            words.append(
-                {
-                    "image": image_to_img_src(cropped_word_image),
-                    "word": word,
-                    "accuracy": accuracy,
-                }
+        for coords, word, accuracy in model.readtext(np.array(image)):
+            if accuracy >= thr / 100:
+                draw.highlight_word(coords, word)
+                cropped_word_image = draw.crop(coords)
+                words.append(
+                    {
+                        "image": image_to_img_src(cropped_word_image),
+                        "word": word,
+                        "accuracy": accuracy,
+                    }
             )
         highlighted_image = draw.get_highlighted_image()
         ctx.update(
@@ -50,5 +57,5 @@ def infer_model(
             words=words,
         )
     except Exception as err:
-        ctx.update(error=str(err), error_type=type(err).__name__ )
+        ctx.update(error=str(err), error_type=type(err).__name__, threshold=thr)
     return templates.TemplateResponse(request, "index.html", ctx)
